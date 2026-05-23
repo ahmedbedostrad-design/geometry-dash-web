@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash Clone</title>
+    <title>Geometry Dash</title>
     <style>
         * {
             margin: 0;
@@ -14,148 +14,308 @@
         body {
             width: 100%;
             height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background: #222;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: Arial, sans-serif;
-            overflow: hidden;
         }
 
         #gameContainer {
             position: relative;
-            width: 800px;
-            height: 600px;
-            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
-            border: 3px solid #333;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
         }
 
-        #score {
+        #gameWorld {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* HUD */
+        #hud {
             position: absolute;
             top: 20px;
             left: 20px;
-            font-size: 24px;
+            display: flex;
+            gap: 40px;
+            color: #00ff00;
+            font-size: 20px;
             font-weight: bold;
-            color: #333;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
             z-index: 100;
         }
 
-        #gameOverScreen {
+        #score, #level, #attempts {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 2px solid #00ff00;
+        }
+
+        /* Player */
+        .player {
             position: absolute;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            border-radius: 4px;
+            box-shadow: 0 0 20px #00ff00, inset 0 0 10px rgba(255, 255, 255, 0.5);
+            z-index: 50;
+            transition: transform 0.1s;
+        }
+
+        .player.jumping {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px #00ff00, inset 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Obstacles - Spikes */
+        .spike {
+            position: absolute;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            box-shadow: 0 0 20px #ff0000, inset 0 0 10px rgba(255, 255, 255, 0.3);
+            z-index: 40;
+        }
+
+        .spike-small {
+            width: 30px;
+            height: 30px;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+
+        .spike-medium {
+            width: 40px;
+            height: 40px;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+
+        .spike-large {
+            width: 50px;
+            height: 50px;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+
+        /* Collectibles */
+        .collectible {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle at 30% 30%, #ffff00, #ffcc00);
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ffff00, inset 0 0 10px rgba(255, 255, 255, 0.6);
+            z-index: 30;
+            animation: collectibleSpin 2s linear infinite;
+        }
+
+        @keyframes collectibleSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* Ground */
+        .ground {
+            position: absolute;
+            background: linear-gradient(180deg, #00cc00, #009900);
+            border-top: 4px solid #00ff00;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.3);
+            z-index: 10;
+        }
+
+        /* Particles */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .spark {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Start Screen */
+        #startScreen {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 200;
+            transition: opacity 0.5s;
+        }
+
+        #startScreen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .game-title {
+            font-size: 80px;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00;
+            margin-bottom: 30px;
+            animation: titleBounce 2s infinite;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .game-subtitle {
+            font-size: 24px;
+            color: #ffff00;
+            text-shadow: 0 0 20px #ffff00;
+            margin-bottom: 60px;
+        }
+
+        .start-btn {
+            padding: 20px 60px;
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 30px #00ff00;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px #00ff00;
+        }
+
+        .start-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Game Over Screen */
+        #gameOverScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 150;
+            backdrop-filter: blur(5px);
         }
 
         #gameOverScreen.show {
             display: flex;
         }
 
-        #gameOverText {
-            font-size: 48px;
-            color: #ff4444;
+        .game-over-content {
+            text-align: center;
+        }
+
+        .game-over-title {
+            font-size: 72px;
+            color: #ff0000;
+            text-shadow: 0 0 30px #ff0000;
+            margin-bottom: 40px;
             font-weight: bold;
-            margin-bottom: 20px;
         }
 
-        #finalScore {
-            font-size: 32px;
-            color: #fff;
-            margin-bottom: 30px;
-        }
-
-        #restartBtn {
-            padding: 15px 40px;
+        .stats {
             font-size: 24px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        #restartBtn:hover {
-            background: #45a049;
-            transform: scale(1.05);
-        }
-
-        .player {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #ff6b6b;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 4px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .obstacle {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: #ff0000;
-            border-radius: 4px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .coin {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #FFD700;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .ground {
-            position: absolute;
-            width: 100%;
-            height: 60px;
-            background: linear-gradient(to bottom, #90EE90, #228B22);
-            border-top: 3px solid #000;
-            bottom: 0;
-        }
-
-        .instructions {
-            position: absolute;
-            bottom: 80px;
-            left: 20px;
-            color: #333;
-            font-size: 14px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px 15px;
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 0, 0.1);
+            padding: 15px;
             border-radius: 5px;
-            z-index: 50;
+            border: 2px solid #ffff00;
+            margin: 10px 0;
+        }
+
+        .restart-btn {
+            margin-top: 40px;
+            padding: 20px 60px;
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 30px #00ff00;
+            transition: all 0.3s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px #00ff00;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 50px;
+            }
+
+            #hud {
+                font-size: 16px;
+                gap: 20px;
+            }
+
+            .start-btn, .restart-btn {
+                padding: 15px 40px;
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
-        <div id="score">Score: 0</div>
-        <div class="instructions">SPACE or CLICK to Jump</div>
-        <div id="gameOverScreen">
-            <div id="gameOverText">GAME OVER!</div>
-            <div id="finalScore">Final Score: 0</div>
-            <button id="restartBtn">Restart Game</button>
+        <!-- Start Screen -->
+        <div id="startScreen">
+            <div class="game-title">GEOMETRY DASH</div>
+            <div class="game-subtitle">Jump and avoid obstacles!</div>
+            <button class="start-btn">START GAME</button>
         </div>
-        <div class="ground"></div>
+
+        <!-- Game World -->
+        <div id="gameWorld"></div>
+
+        <!-- HUD -->
+        <div id="hud">
+            <div id="score">SCORE: 0</div>
+            <div id="level">LEVEL: 1</div>
+            <div id="attempts">ATTEMPTS: 3</div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen">
+            <div class="game-over-content">
+                <div class="game-over-title">GAME OVER!</div>
+                <div class="stats">FINAL SCORE: <span id="finalScore">0</span></div>
+                <div class="stats">LEVEL REACHED: <span id="finalLevel">1</span></div>
+                <div class="stats">COLLECTIBLES: <span id="finalCollectibles">0</span></div>
+                <button class="restart-btn">RESTART GAME</button>
+            </div>
+        </div>
     </div>
 
     <script src="game.js"></script>
