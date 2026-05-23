@@ -52,16 +52,19 @@ class GeometryDashGame {
         this.player = document.createElement('div');
         this.player.className = 'player';
         this.player.style.left = '50px';
-        this.player.style.bottom = this.groundLevel - 40 + 'px';
+        this.player.style.bottom = '150px';
         this.gameWorld.appendChild(this.player);
         this.playerY = this.groundLevel - 40;
     }
 
     bindEvents() {
         // Start button
-        document.querySelector('.start-btn').addEventListener('click', () => {
-            this.startGame();
-        });
+        const startBtn = document.querySelector('.start-btn');
+        if (startBtn) {
+            startBtn.addEventListener('click', () => {
+                this.startGame();
+            });
+        }
 
         // Jump controls
         document.addEventListener('keydown', (e) => {
@@ -71,24 +74,23 @@ class GeometryDashGame {
             }
         });
 
-        document.addEventListener('click', () => {
+        this.gameWorld.addEventListener('click', () => {
             if (this.isPlaying && !this.isGameOver) {
                 this.jump();
             }
         });
 
         // Restart button
-        document.querySelector('.restart-btn').addEventListener('click', () => {
-            location.reload();
-        });
-
-        // Responsive
-        window.addEventListener('resize', () => {
-            this.groundLevel = window.innerHeight - 150;
-        });
+        const restartBtn = document.querySelector('.restart-btn');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', () => {
+                location.reload();
+            });
+        }
     }
 
     startGame() {
+        console.log('Game Started');
         this.startScreen.classList.add('hidden');
         this.isPlaying = true;
         this.spawnLevel();
@@ -96,8 +98,16 @@ class GeometryDashGame {
 
     spawnLevel() {
         // Clear old obstacles
-        this.obstacles.forEach(obs => obs.remove());
-        this.collectibles_list.forEach(col => col.element.remove());
+        this.obstacles.forEach(obs => {
+            if (obs.element && obs.element.parentNode) {
+                obs.element.remove();
+            }
+        });
+        this.collectibles_list.forEach(col => {
+            if (col.element && col.element.parentNode) {
+                col.element.remove();
+            }
+        });
         this.obstacles = [];
         this.collectibles_list = [];
 
@@ -129,13 +139,16 @@ class GeometryDashGame {
         const size = sizeOptions[Math.floor(type)];
         spike.className = `spike ${size}`;
         spike.style.left = x + 'px';
-        spike.style.bottom = this.groundLevel - (type === 2 ? 60 : type === 1 ? 40 : 30) + 'px';
+        spike.style.bottom = (150 - (type === 2 ? 60 : type === 1 ? 40 : 30)) + 'px';
 
         this.gameWorld.appendChild(spike);
+        
+        const width = Math.floor(type) === 2 ? 50 : Math.floor(type) === 1 ? 40 : 30;
         this.obstacles.push({
             element: spike,
             x: x,
-            width: parseInt(spike.style.width),
+            width: width,
+            type: Math.floor(type),
             passed: false
         });
     }
@@ -169,7 +182,7 @@ class GeometryDashGame {
             const particle = document.createElement('div');
             particle.className = 'particle spark';
             particle.style.left = '70px';
-            particle.style.bottom = this.groundLevel - 40 + 'px';
+            particle.style.bottom = '150px';
             this.gameWorld.appendChild(particle);
 
             const angle = (Math.PI * 2 * i) / 5;
@@ -178,14 +191,16 @@ class GeometryDashGame {
 
             const animate = () => {
                 particle.style.left = (70 + velocity.x * (0.5 - life)) + 'px';
-                particle.style.bottom = (this.groundLevel - 40 + velocity.y * (0.5 - life)) + 'px';
+                particle.style.bottom = (150 + velocity.y * (0.5 - life)) + 'px';
                 particle.style.opacity = life * 2;
                 life -= 0.01;
 
                 if (life > 0) {
                     requestAnimationFrame(animate);
                 } else {
-                    particle.remove();
+                    if (particle.parentNode) {
+                        particle.remove();
+                    }
                 }
             };
             animate();
@@ -206,18 +221,19 @@ class GeometryDashGame {
         }
 
         // Update visual position
-        const bottom = this.groundLevel - 40 - this.playerY;
-        this.player.style.bottom = (this.playerY - (this.groundLevel - 40)) + (this.groundLevel - 40) + 'px';
+        const bottom = this.playerY - (this.groundLevel - 40) + 150;
+        this.player.style.bottom = bottom + 'px';
     }
 
     checkCollisions() {
         const playerLeft = 50;
-        const playerRight = 50 + 40;
+        const playerRight = 90;
         const playerTop = this.playerY;
         const playerBottom = this.playerY + 40;
 
         // Check obstacles
-        this.obstacles.forEach((obs, index) => {
+        for (let i = 0; i < this.obstacles.length; i++) {
+            const obs = this.obstacles[i];
             const obsLeft = obs.x;
             const obsRight = obs.x + obs.width;
             const obsBottom = this.groundLevel - 60;
@@ -226,6 +242,7 @@ class GeometryDashGame {
             if (playerRight > obsLeft && playerLeft < obsRight &&
                 playerBottom > obsTop && playerTop < obsBottom) {
                 this.gameOver();
+                return;
             }
 
             // Award points for passing
@@ -233,10 +250,11 @@ class GeometryDashGame {
                 obs.passed = true;
                 this.addScore(10);
             }
-        });
+        }
 
         // Check collectibles
-        this.collectibles_list.forEach((col, index) => {
+        for (let i = 0; i < this.collectibles_list.length; i++) {
+            const col = this.collectibles_list[i];
             if (!col.collected) {
                 const distance = Math.sqrt(
                     Math.pow(playerLeft - col.x, 2) + Math.pow(playerTop - col.y, 2)
@@ -244,14 +262,15 @@ class GeometryDashGame {
 
                 if (distance < 50) {
                     col.collected = true;
-                    col.element.remove();
-                    this.collectibles_list.splice(index, 1);
+                    if (col.element && col.element.parentNode) {
+                        col.element.remove();
+                    }
                     this.addScore(25);
                     this.collectibles++;
                     this.createCollectParticles(col.x, col.y);
                 }
             }
-        });
+        }
     }
 
     createCollectParticles(x, y) {
@@ -277,7 +296,9 @@ class GeometryDashGame {
                 if (life > 0) {
                     requestAnimationFrame(animate);
                 } else {
-                    particle.remove();
+                    if (particle.parentNode) {
+                        particle.remove();
+                    }
                 }
             };
             animate();
@@ -285,34 +306,46 @@ class GeometryDashGame {
     }
 
     updateObstacles() {
-        this.obstacles.forEach((obs, index) => {
+        for (let i = 0; i < this.obstacles.length; i++) {
+            const obs = this.obstacles[i];
             obs.x -= this.gameSpeed;
             obs.element.style.left = obs.x + 'px';
 
             // Remove if off screen
             if (obs.x < -100) {
-                obs.element.remove();
-                this.obstacles.splice(index, 1);
+                if (obs.element && obs.element.parentNode) {
+                    obs.element.remove();
+                }
+                this.obstacles.splice(i, 1);
+                i--;
             }
-        });
+        }
 
         // Spawn new obstacles
-        const rightmostObstacle = Math.max(...this.obstacles.map(o => o.x));
-        if (rightmostObstacle < window.innerWidth + 500) {
+        if (this.obstacles.length > 0) {
+            const rightmostObstacle = Math.max(...this.obstacles.map(o => o.x));
+            if (rightmostObstacle < window.innerWidth + 500) {
+                this.spawnObstacle(window.innerWidth + 500, Math.random() * 3);
+            }
+        } else {
             this.spawnObstacle(window.innerWidth + 500, Math.random() * 3);
         }
     }
 
     updateCollectibles() {
-        this.collectibles_list.forEach((col, index) => {
+        for (let i = 0; i < this.collectibles_list.length; i++) {
+            const col = this.collectibles_list[i];
             col.x -= this.gameSpeed;
             col.element.style.left = col.x + 'px';
 
             if (col.x < -50) {
-                col.element.remove();
-                this.collectibles_list.splice(index, 1);
+                if (col.element && col.element.parentNode) {
+                    col.element.remove();
+                }
+                this.collectibles_list.splice(i, 1);
+                i--;
             }
-        });
+        }
     }
 
     addScore(points) {
@@ -373,5 +406,6 @@ class GeometryDashGame {
 
 // Start game when page loads
 window.addEventListener('load', () => {
+    console.log('Page loaded, initializing game');
     new GeometryDashGame();
 });
