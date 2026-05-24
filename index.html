@@ -17,9 +17,6 @@
             font-family: 'Arial', sans-serif;
             background: #222;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         #gameContainer {
@@ -28,7 +25,6 @@
             height: 100%;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             overflow: hidden;
-            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
         }
 
         #gameWorld {
@@ -47,7 +43,7 @@
             color: #00ff00;
             font-size: 20px;
             font-weight: bold;
-            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+            text-shadow: 0 0 10px #00ff00;
             z-index: 100;
         }
 
@@ -63,41 +59,20 @@
             position: absolute;
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #00ff00, #00cc00);
+            background: #00ff00;
             border-radius: 4px;
-            box-shadow: 0 0 20px #00ff00, inset 0 0 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px #00ff00;
             z-index: 50;
-            transition: transform 0.1s;
         }
 
-        .player.jumping {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px #00ff00, inset 0 0 10px rgba(255, 255, 255, 0.8);
-        }
-
-        /* Obstacles - Spikes */
+        /* Obstacles */
         .spike {
             position: absolute;
-            background: linear-gradient(135deg, #ff0000, #cc0000);
-            box-shadow: 0 0 20px #ff0000, inset 0 0 10px rgba(255, 255, 255, 0.3);
-            z-index: 40;
-        }
-
-        .spike-small {
-            width: 30px;
-            height: 30px;
-            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-        }
-
-        .spike-medium {
             width: 40px;
             height: 40px;
-            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-        }
-
-        .spike-large {
-            width: 50px;
-            height: 50px;
+            background: #ff0000;
+            box-shadow: 0 0 20px #ff0000;
+            z-index: 40;
             clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
         }
 
@@ -106,40 +81,18 @@
             position: absolute;
             width: 25px;
             height: 25px;
-            background: radial-gradient(circle at 30% 30%, #ffff00, #ffcc00);
+            background: #ffff00;
             border-radius: 50%;
-            box-shadow: 0 0 20px #ffff00, inset 0 0 10px rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 20px #ffff00;
             z-index: 30;
-            animation: collectibleSpin 2s linear infinite;
-        }
-
-        @keyframes collectibleSpin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1); }
         }
 
         /* Ground */
         .ground {
             position: absolute;
-            background: linear-gradient(180deg, #00cc00, #009900);
+            background: #00cc00;
             border-top: 4px solid #00ff00;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.3);
             z-index: 10;
-        }
-
-        /* Particles */
-        .particle {
-            position: absolute;
-            pointer-events: none;
-        }
-
-        .spark {
-            width: 8px;
-            height: 8px;
-            background: #00ff00;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #00ff00;
         }
 
         /* Start Screen */
@@ -155,26 +108,18 @@
             justify-content: center;
             align-items: center;
             z-index: 200;
-            transition: opacity 0.5s;
         }
 
         #startScreen.hidden {
-            opacity: 0;
-            pointer-events: none;
+            display: none;
         }
 
         .game-title {
             font-size: 80px;
             font-weight: bold;
             color: #00ff00;
-            text-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00;
+            text-shadow: 0 0 30px #00ff00;
             margin-bottom: 30px;
-            animation: titleBounce 2s infinite;
-        }
-
-        @keyframes titleBounce {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
         }
 
         .game-subtitle {
@@ -188,18 +133,16 @@
             padding: 20px 60px;
             font-size: 28px;
             font-weight: bold;
-            background: linear-gradient(135deg, #00ff00, #00cc00);
+            background: #00ff00;
             color: #000;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             box-shadow: 0 0 30px #00ff00;
-            transition: all 0.3s;
         }
 
         .start-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 50px #00ff00;
         }
 
         .start-btn:active {
@@ -219,7 +162,6 @@
             justify-content: center;
             align-items: center;
             z-index: 150;
-            backdrop-filter: blur(5px);
         }
 
         #gameOverScreen.show {
@@ -235,19 +177,13 @@
             color: #ff0000;
             text-shadow: 0 0 30px #ff0000;
             margin-bottom: 40px;
-            font-weight: bold;
         }
 
         .stats {
             font-size: 24px;
             color: #ffff00;
             text-shadow: 0 0 10px #ffff00;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 0, 0.1);
-            padding: 15px;
-            border-radius: 5px;
-            border: 2px solid #ffff00;
-            margin: 10px 0;
+            margin: 20px 0;
         }
 
         .restart-btn {
@@ -255,69 +191,346 @@
             padding: 20px 60px;
             font-size: 28px;
             font-weight: bold;
-            background: linear-gradient(135deg, #00ff00, #00cc00);
+            background: #00ff00;
             color: #000;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 0 30px #00ff00;
-            transition: all 0.3s;
         }
 
         .restart-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 50px #00ff00;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .game-title {
-                font-size: 50px;
-            }
-
-            #hud {
-                font-size: 16px;
-                gap: 20px;
-            }
-
-            .start-btn, .restart-btn {
-                padding: 15px 40px;
-                font-size: 20px;
-            }
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
-        <!-- Start Screen -->
         <div id="startScreen">
             <div class="game-title">GEOMETRY DASH</div>
             <div class="game-subtitle">Jump and avoid obstacles!</div>
-            <button class="start-btn">START GAME</button>
+            <button class="start-btn" onclick="startGameClick()">START GAME</button>
         </div>
 
-        <!-- Game World -->
         <div id="gameWorld"></div>
 
-        <!-- HUD -->
         <div id="hud">
             <div id="score">SCORE: 0</div>
             <div id="level">LEVEL: 1</div>
             <div id="attempts">ATTEMPTS: 3</div>
         </div>
 
-        <!-- Game Over Screen -->
         <div id="gameOverScreen">
             <div class="game-over-content">
                 <div class="game-over-title">GAME OVER!</div>
                 <div class="stats">FINAL SCORE: <span id="finalScore">0</span></div>
-                <div class="stats">LEVEL REACHED: <span id="finalLevel">1</span></div>
+                <div class="stats">LEVEL: <span id="finalLevel">1</span></div>
                 <div class="stats">COLLECTIBLES: <span id="finalCollectibles">0</span></div>
-                <button class="restart-btn">RESTART GAME</button>
+                <button class="restart-btn" onclick="location.reload()">RESTART</button>
             </div>
         </div>
     </div>
 
-    <script src="game.js"></script>
+    <script>
+        let game = null;
+
+        function startGameClick() {
+            console.log('Start button clicked');
+            if (game) {
+                game.startGame();
+            }
+        }
+
+        class GeometryDashGame {
+            constructor() {
+                console.log('Game constructor called');
+                
+                this.gameWorld = document.getElementById('gameWorld');
+                this.startScreen = document.getElementById('startScreen');
+                this.gameOverScreen = document.getElementById('gameOverScreen');
+                this.scoreDisplay = document.getElementById('score');
+                this.levelDisplay = document.getElementById('level');
+                this.attemptsDisplay = document.getElementById('attempts');
+                this.finalScoreDisplay = document.getElementById('finalScore');
+                this.finalLevelDisplay = document.getElementById('finalLevel');
+                this.finalCollectiblesDisplay = document.getElementById('finalCollectibles');
+
+                this.isPlaying = false;
+                this.isGameOver = false;
+                this.score = 0;
+                this.level = 1;
+                this.attempts = 3;
+                this.collectibles = 0;
+                this.gameSpeed = 8;
+                this.baseSpeed = 8;
+
+                this.player = null;
+                this.playerY = 400;
+                this.playerVelocityY = 0;
+                this.isJumping = false;
+                this.gravity = 0.7;
+                this.jumpPower = -18;
+                this.groundLevel = 450;
+
+                this.obstacles = [];
+                this.collectibles_list = [];
+
+                this.init();
+                this.setupKeyboardControls();
+                this.gameLoop();
+            }
+
+            init() {
+                console.log('Game init called');
+                // Create ground
+                const ground = document.createElement('div');
+                ground.className = 'ground';
+                ground.style.left = '0px';
+                ground.style.top = this.groundLevel + 'px';
+                ground.style.width = window.innerWidth + 'px';
+                ground.style.height = '100px';
+                this.gameWorld.appendChild(ground);
+
+                // Create player
+                this.player = document.createElement('div');
+                this.player.className = 'player';
+                this.player.style.left = '50px';
+                this.player.style.top = this.playerY + 'px';
+                this.gameWorld.appendChild(this.player);
+            }
+
+            setupKeyboardControls() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space' && this.isPlaying && !this.isGameOver) {
+                        e.preventDefault();
+                        this.jump();
+                    }
+                });
+
+                this.gameWorld.addEventListener('click', () => {
+                    if (this.isPlaying && !this.isGameOver) {
+                        this.jump();
+                    }
+                });
+            }
+
+            startGame() {
+                console.log('Start game called');
+                this.startScreen.classList.add('hidden');
+                this.isPlaying = true;
+                this.spawnLevel();
+            }
+
+            spawnLevel() {
+                console.log('Spawning level', this.level);
+                // Clear old obstacles
+                this.obstacles.forEach(obs => {
+                    if (obs.element && obs.element.parentNode) {
+                        obs.element.remove();
+                    }
+                });
+                this.collectibles_list.forEach(col => {
+                    if (col.element && col.element.parentNode) {
+                        col.element.remove();
+                    }
+                });
+                this.obstacles = [];
+                this.collectibles_list = [];
+
+                // Spawn obstacles
+                const patternCount = 5 + (this.level * 2);
+                for (let i = 0; i < patternCount; i++) {
+                    const posX = window.innerWidth + (i * 300);
+                    this.spawnObstacle(posX);
+                    if (Math.random() > 0.5) {
+                        this.spawnCollectible(posX + 100, 350);
+                    }
+                }
+            }
+
+            spawnObstacle(x) {
+                const spike = document.createElement('div');
+                spike.className = 'spike';
+                spike.style.left = x + 'px';
+                spike.style.top = this.groundLevel - 40 + 'px';
+                this.gameWorld.appendChild(spike);
+
+                this.obstacles.push({
+                    element: spike,
+                    x: x,
+                    width: 40,
+                    passed: false
+                });
+            }
+
+            spawnCollectible(x, y) {
+                const collectible = document.createElement('div');
+                collectible.className = 'collectible';
+                collectible.style.left = x + 'px';
+                collectible.style.top = y + 'px';
+                this.gameWorld.appendChild(collectible);
+
+                this.collectibles_list.push({
+                    element: collectible,
+                    x: x,
+                    y: y,
+                    collected: false
+                });
+            }
+
+            jump() {
+                if (!this.isJumping) {
+                    this.playerVelocityY = this.jumpPower;
+                    this.isJumping = true;
+                }
+            }
+
+            updatePlayer() {
+                this.playerVelocityY += this.gravity;
+                this.playerY += this.playerVelocityY;
+
+                if (this.playerY >= this.groundLevel - 40) {
+                    this.playerY = this.groundLevel - 40;
+                    this.playerVelocityY = 0;
+                    this.isJumping = false;
+                }
+
+                this.player.style.top = this.playerY + 'px';
+            }
+
+            updateObstacles() {
+                for (let i = this.obstacles.length - 1; i >= 0; i--) {
+                    const obs = this.obstacles[i];
+                    obs.x -= this.gameSpeed;
+                    obs.element.style.left = obs.x + 'px';
+
+                    if (obs.x < -50) {
+                        obs.element.remove();
+                        this.obstacles.splice(i, 1);
+                    }
+                }
+
+                // Spawn new obstacles
+                if (this.obstacles.length < 5) {
+                    this.spawnObstacle(window.innerWidth);
+                }
+            }
+
+            updateCollectibles() {
+                for (let i = this.collectibles_list.length - 1; i >= 0; i--) {
+                    const col = this.collectibles_list[i];
+                    col.x -= this.gameSpeed;
+                    col.element.style.left = col.x + 'px';
+
+                    if (col.x < -50) {
+                        col.element.remove();
+                        this.collectibles_list.splice(i, 1);
+                    }
+                }
+            }
+
+            checkCollisions() {
+                const playerRect = {
+                    x: 50,
+                    y: this.playerY,
+                    width: 40,
+                    height: 40
+                };
+
+                // Check obstacles
+                this.obstacles.forEach((obs) => {
+                    const obsRect = {
+                        x: obs.x,
+                        y: this.groundLevel - 40,
+                        width: 40,
+                        height: 40
+                    };
+
+                    if (this.rectanglesCollide(playerRect, obsRect)) {
+                        this.gameOver();
+                    }
+
+                    if (!obs.passed && playerRect.x > obsRect.x + obsRect.width) {
+                        obs.passed = true;
+                        this.addScore(10);
+                    }
+                });
+
+                // Check collectibles
+                this.collectibles_list.forEach((col, index) => {
+                    if (!col.collected) {
+                        const distance = Math.hypot(playerRect.x - col.x, playerRect.y - col.y);
+                        if (distance < 50) {
+                            col.collected = true;
+                            col.element.remove();
+                            this.collectibles_list.splice(index, 1);
+                            this.addScore(25);
+                            this.collectibles++;
+                        }
+                    }
+                });
+            }
+
+            rectanglesCollide(rect1, rect2) {
+                return rect1.x < rect2.x + rect2.width &&
+                       rect1.x + rect1.width > rect2.x &&
+                       rect1.y < rect2.y + rect2.height &&
+                       rect1.y + rect1.height > rect2.y;
+            }
+
+            addScore(points) {
+                this.score += points;
+                this.scoreDisplay.textContent = `SCORE: ${this.score}`;
+
+                if (this.score % 100 === 0 && this.score > 0) {
+                    this.nextLevel();
+                }
+
+                this.gameSpeed = this.baseSpeed + (this.score / 200);
+            }
+
+            nextLevel() {
+                this.level++;
+                this.levelDisplay.textContent = `LEVEL: ${this.level}`;
+                this.baseSpeed += 1;
+                this.spawnLevel();
+            }
+
+            gameOver() {
+                this.attempts--;
+                this.attemptsDisplay.textContent = `ATTEMPTS: ${this.attempts}`;
+
+                if (this.attempts <= 0) {
+                    this.isPlaying = false;
+                    this.isGameOver = true;
+                    this.gameOverScreen.classList.add('show');
+                    this.finalScoreDisplay.textContent = this.score;
+                    this.finalLevelDisplay.textContent = this.level;
+                    this.finalCollectiblesDisplay.textContent = this.collectibles;
+                } else {
+                    // Reset player
+                    this.playerY = this.groundLevel - 40;
+                    this.playerVelocityY = 0;
+                    this.isJumping = false;
+                }
+            }
+
+            gameLoop() {
+                if (this.isPlaying && !this.isGameOver) {
+                    this.updatePlayer();
+                    this.updateObstacles();
+                    this.updateCollectibles();
+                    this.checkCollisions();
+                }
+
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+
+        window.addEventListener('load', () => {
+            console.log('Page loaded');
+            game = new GeometryDashGame();
+        });
+    </script>
 </body>
 </html>
+    
